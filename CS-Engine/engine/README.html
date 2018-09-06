@@ -1,0 +1,102 @@
+<p>#CS-Engine An engine for building 2D games</p>
+<p>#Setup The engine is three main parts. The Style Sheet, the loader/compiler PHP script, and the JavaScript init function.</p>
+<pre><code>&lt;html&gt;
+   &lt;head&gt;
+       &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;css.css&quot;&gt;
+   &lt;/head&gt;
+   &lt;body&gt;
+       &lt;div id=&#39;view&#39;&gt;&lt;/div&gt;
+       &lt;script&gt;
+           cs.init();
+       &lt;/script&gt;
+   &lt;/body&gt;
+&lt;html&gt;
+</code></pre>
+<p>After the init function is where we will create objects or load maps.</p>
+<p>#Loading Sprites Sprites are stored in the _sprites folder and automatically loaded by the load.php.</p>
+<p>The file name is used to define properties of the sprite</p>
+<pre><code>[spr_name]-[frames]-[width]-[height]-[x-origin]-[y-origin].png
+</code></pre>
+<p>This will be loaded:</p>
+<pre><code> cs.sprite.add(&#39;spr-1-32-48-0-0&#39;,&#39;path/spre-1-32-48-0-0.png&#39;)
+</code></pre>
+<p>This image will now be usable: </p>
+<pre><code> cs.draw.sprite(&#39;spr&#39;, x, y, frame);
+</code></pre>
+<p>Use -1 as the frame argument to animate the sprite.</p>
+<p>#Objects Objects are stored in the _objects folder. To create a new object create a new js file in the _objects folder. The files in this folders will be loaded by the load.php at runtime.</p>
+<pre><code>&lt;script src=&quot;cscript/_objects/obj_something.js?&quot;&gt;&lt;/script&gt;
+</code></pre>
+<p>Inside the new js file you will need to create the object by using:</p>
+<pre><code>cs.obj.create(name, createFunction, stepFunction)
+</code></pre>
+<p>Copy this into your new js file and change the &#39;obj_name&#39; string to the name of your object.</p>
+<pre><code>cs.obj.load(&#39;obj_name&#39;, {
+    create: function(){
+        this.width = 16;
+        this.height = 16;
+    }, 
+    step: function(){
+       cs.draw.sprite(&#39;spr&#39;, this.x, this.y);
+   }
+});
+</code></pre>
+<p>To create the object add after the init() function to cs.obj.create(&#39;obj_name&#39;, x, y);</p>
+<pre><code>&lt;script type=&quot;text/javascript&quot;&gt;
+    cs.init(&#39;view&#39;);
+    //Game code under here
+    cs.obj.create(&#39;obj_name&#39;, 0, 0);
+&lt;/script&gt;
+</code></pre>
+<p>#Drawing Functions CS Engine has functions for drawing sprites and shapes. You can change settings of the current layer using the set functions.</p>
+<p>Sprites:</p>
+<pre><code>cs.draw.sprite(sprite, x, y, frame);
+cs.draw.spriteExt(img, x, y, angle, frame);
+</code></pre>
+<p>Text:</p>
+<pre><code>cs.draw.text(x, y, str);
+</code></pre>
+<p>Note: Limit text usage for better performance. Shapes:
+</p>
+<pre><code>//Rectangle
+cs.draw.rect(x, y, width, height, fill[true/false]);
+//Line
+cs.draw.line(x1, y1, x2, y2);
+</code></pre>
+<p>Set Functions:</p>
+<pre><code>//Color
+cs.draw.setColor(&quot;hexvalue&quot;);
+
+//Alpha
+cs.draw.setAlpha(0-1);
+
+//Line Thickness
+cs.draw.setWidth(decimal);
+
+//Font
+cs.draw.setFont(&#39;Times New Roman 12px&#39;);
+
+//Text Align Horizontal
+cs.draw.setTextHort(&#39;center, left, right&#39;);
+
+//Text Align Vertical
+cs.draw.setTextVert(&#39;top, bottom, baseline, middle&#39;);
+
+//Text Center vertically and hortizontally
+cs.draw.setTextCenter();
+</code></pre>
+<p>Note: The set function are reset after any drawing event! They are layer specific and the layer resets after each draw event. You should use these right before your drawing event </p>
+<pre><code>//Draw a white filled square
+cs.draw.setColor(&quot;#FFFFFF&quot;);
+cs.draw.rect(0, 0, 40, 40, true);
+</code></pre>
+<p>#The Game Camera The game camera is the area the game and GUI is drawn to. The GUI and Game are drawn to hidden canvases separately then drawn to the view/camera canvas. There are a couple settings that can be tweeked to change the view.</p>
+<p>The maxWidth and maxHeight set the maximum literal pixel size of the canvas. The engine will then try to get the closest aspect ratio to the size you set. Then it will be stretched with CSS to make fill the entire screen.</p>
+<pre><code>maxWidth : 500
+maxHeight : 400
+</code></pre>
+<p>The scale variables allows scaling the camera. It is not very reliable because it will make drawing blurry. You should rely on the engine automatic scaling. If you would like to make the camera smaller/zoomed in set the maxHeight and maxWidth to lower
+  values.</p>
+<pre><code>//Scale the camera 2 times the size
+cs.camera.scale = 2;
+</code></pre>
